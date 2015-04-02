@@ -279,20 +279,39 @@ BOOL CBarChart::DrawItem()
 	}
 
 	COLORREF oldClr;
+	TCHAR strBuf[10] = { 0 };
+	SIZE size = { 0 };
+	int height = 0;
 	vector<BARCHARTITEM>::iterator tbegin = m_tdfItems.begin();
 	vector<BARCHARTITEM>::iterator tend = m_tdfItems.end();
 	POINT ptPos = m_ptZero;
+	POINT linePos = { ptPos.x + m_itemWidth / 2, ptPos.y - height };
+	POINT oldLinePos = m_ptZero;
 	while (tbegin != tend)
 	{
 		ptPos.x += m_itemMergin;
+		height = (int)((*tbegin).item.value * m_heightMergin);
+		
+		DrawCube(ptPos, m_itemWidth, m_hWidth, height, (*tbegin).rgbColor);
 
-		DrawCube(ptPos, m_itemWidth, m_hWidth, (int)((*tbegin).item.value * m_heightMergin), (*tbegin).rgbColor);
+		linePos.x = ptPos.x + m_itemWidth / 2;
+		linePos.y = ptPos.y - height;
+		MoveToEx(m_bufHdc, oldLinePos.x, oldLinePos.y, NULL);
+		LineTo(m_bufHdc, linePos.x, linePos.y);
+		Ellipse(m_bufHdc, linePos.x - 2, linePos.y - 2, linePos.x + 2, linePos.y + 2);
+		oldLinePos = linePos;
 
 		if (fontSize >= 1)
 		{
 			oldClr = SetTextColor(m_bufHdc, (*tbegin).rgbColor);
-			TSTRING strBuf = (*tbegin).item.name;
-			TextOut(m_bufHdc, ptPos.x, ptPos.y + 5, strBuf.c_str(), strBuf.length());
+
+			::GetTextExtentPoint(m_bufHdc, (*tbegin).item.name.c_str(), (*tbegin).item.name.length(), &size);
+			TextOut(m_bufHdc, ptPos.x + (m_itemWidth - size.cx) / 2, ptPos.y + 5, (*tbegin).item.name.c_str(), (*tbegin).item.name.length());
+
+			_itot_s((*tbegin).item.value, strBuf, 10, 10);
+			::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
+			TextOut(m_bufHdc, ptPos.x + (m_itemWidth - size.cx) / 2, ptPos.y - height - m_hWidth - size.cy - 5, strBuf, _tcslen(strBuf));
+			
 			SetTextColor(m_bufHdc, oldClr);
 		}
 
@@ -308,4 +327,10 @@ BOOL CBarChart::DrawItem()
 	}
 
 	return TRUE;
+}
+
+void CBarChart::SetXYName(TSTRING strXName, TSTRING strYName)
+{
+	m_strXName = strXName;
+	m_strYName = strYName;
 }

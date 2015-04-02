@@ -32,6 +32,7 @@ private:
 
 public:
 	BOOL Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARCHARTITEM> items, int itemMergin);
+	void SetXYName(TSTRING strXName, TSTRING strYName);
 	BOOL DrawDc();
 };
 

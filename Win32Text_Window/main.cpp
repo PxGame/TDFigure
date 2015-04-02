@@ -151,26 +151,51 @@ LRESULT OnPaint(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 	vector<BARCHARTITEM> item;
 	BARCHARTITEM hh = { 20, TEXT("ÏòÄÁ") , RGB(0,255,0)};
 	item.push_back(hh);
-	hh.item.value = 30;
+	hh.item.value = 333;
 	hh.rgbColor = RGB(255,0,0);
 	item.push_back(hh);
-	hh.item.value = 40;
+	hh.item.value = 454;
 	hh.rgbColor = RGB(0, 0, 255);
 	item.push_back(hh);
-	//hh.item.value = 50;
-	//hh.rgbColor = RGB(100, 100, 100);
-	//item.push_back(hh);
-	//hh.item.value = 1000;
-	//hh.rgbColor = RGB(200, 200, 200);
-	//item.push_back(hh);
-	//hh.item.value = 200;
-	//hh.rgbColor = RGB(255, 255, 255);
-	//item.push_back(hh);
+	hh.item.value = 50;
+	hh.rgbColor = RGB(100, 100, 100);
+	item.push_back(hh);
+	hh.item.value = 1000;
+	hh.rgbColor = RGB(200, 200, 200);
+	item.push_back(hh);
+	hh.item.value = 222;
+	hh.rgbColor = RGB(100, 73, 10);
+	item.push_back(hh);
+	hh.item.value = 1000;
+	hh.rgbColor = RGB(54, 200, 54);
+	item.push_back(hh);
+	hh.item.value = 50;
+	hh.rgbColor = RGB(5, 100, 64);
+	item.push_back(hh);
+	hh.item.value = 80;
+	hh.rgbColor = RGB(57, 200, 200);
+	item.push_back(hh);
+	hh.item.value = 1;
+	hh.rgbColor = RGB(100, 57, 5);
+	item.push_back(hh);
+	hh.item.value = 700;
+	hh.rgbColor = RGB(200, 200, 87);
+	item.push_back(hh);
+	hh.item.value = 1252;
+	hh.rgbColor = RGB(100, 54, 100);
+	item.push_back(hh);
+	hh.item.value = 1000;
+	hh.rgbColor = RGB(200, 12, 200);
+	item.push_back(hh);
+	hh.item.value = 200;
+	hh.rgbColor = RGB(255, 12, 255);
+	item.push_back(hh);
 
 	BOOL bRet = FALSE;
 	bRet = bc.Init(hdc, rt, 50, 10, item, 10);
 	if (bRet == TRUE)
 	{
+		bc.SetXYName(TEXT("X(0/0)"), TEXT("Y(1/1)"));
 		bc.DrawDc();
 	}
 
