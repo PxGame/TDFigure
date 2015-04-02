@@ -43,7 +43,7 @@ protected:
 	HDC m_hdc;
 	HDC m_bufHdc;
 	HBITMAP m_bufBitmap;
-	HBITMAP m_OldBufBitmap;
+	HBITMAP m_oldBufBitmap;
 	HPEN m_penAxis;
 	HPEN m_oldPenAxis;
 

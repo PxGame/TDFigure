@@ -7,11 +7,7 @@ CTDFigure::CTDFigure()
 	m_bufBitmap = NULL;
 	m_penAxis = NULL;
 
-
-	m_rtScope.bottom = 0;
-	m_rtScope.left = 0;
-	m_rtScope.right = 0;
-	m_rtScope.top = 0;
+	SetRect(&m_rtScope, 0, 0, 0, 0);
 	m_nMargin = 0;
 	m_strXName = TEXT("X");
 	m_strYName = TEXT("Y");
@@ -27,7 +23,7 @@ CTDFigure::CTDFigure()
 	m_nYLength = 0;
 
 	m_oldPenAxis = NULL;
-	m_OldBufBitmap = NULL;
+	m_oldBufBitmap = NULL;
 }
 
 CTDFigure::~CTDFigure()
@@ -95,7 +91,7 @@ BOOL CTDFigure::Init(HDC hdc, RECT rtScope, int nMargin)
 	{
 		return FALSE;
 	}
-	m_OldBufBitmap = (HBITMAP)SelectObject(m_bufHdc, m_bufBitmap);
+	m_oldBufBitmap = (HBITMAP)SelectObject(m_bufHdc, m_bufBitmap);
 
 	m_penAxis = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
 	if (m_penAxis == NULL)

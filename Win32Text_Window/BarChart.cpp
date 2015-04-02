@@ -202,28 +202,26 @@ BOOL CBarChart::DrawLine()
 	HFONT font = NULL;
 	HFONT oldFont = NULL;
 	int fontSize = (int)(m_nMaxValue / 10 * m_heightMergin / 2) < m_nFontMinSize ? m_nFontMinSize : (int)(m_nMaxValue / 10 * m_heightMergin / 2) > m_nFontMaxSize ? m_nFontMaxSize : (int)(m_nMaxValue / 10 * m_heightMergin / 2);
-	if (fontSize >= 1)
-	{
-		LOGFONT logft;
-		ZeroMemory(&logft, sizeof(logft));
-		//CFont::FromHandle((HFONT)GetStockObject(DEFAULT_GUI_FONT))->GetLogFont(&logft);//获取系统字体
-		logft.lfWidth = 0;							//字体宽度
-		logft.lfHeight = fontSize;							//字体高度
-		logft.lfWeight = 5;						//字体粗细
-		logft.lfItalic = FALSE;						//是否斜体
-		logft.lfUnderline = FALSE;						//是否有下划线
-		logft.lfStrikeOut = FALSE;						//是否有删除线
-		logft.lfCharSet = CHINESEBIG5_CHARSET;					//字符集
-		logft.lfOutPrecision = OUT_DEFAULT_PRECIS;			//输出精度
-		logft.lfClipPrecision = CLIP_DEFAULT_PRECIS;			//剪切精度
-		logft.lfQuality = DEFAULT_QUALITY;				//输出质量
-		logft.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;	//字体的间距和家族
-		logft.lfOrientation = 0;
-		logft.lfEscapement = 0;
-		_tcscpy_s(logft.lfFaceName, 32, TEXT("system"));					//字体类型
-		font = CreateFontIndirect(&logft);
-		oldFont = (HFONT)SelectObject(m_bufHdc, font);
-	}
+
+	LOGFONT logft;
+	ZeroMemory(&logft, sizeof(logft));
+	//CFont::FromHandle((HFONT)GetStockObject(DEFAULT_GUI_FONT))->GetLogFont(&logft);//获取系统字体
+	logft.lfWidth = 0;							//字体宽度
+	logft.lfHeight = fontSize;							//字体高度
+	logft.lfWeight = 5;						//字体粗细
+	logft.lfItalic = FALSE;						//是否斜体
+	logft.lfUnderline = FALSE;						//是否有下划线
+	logft.lfStrikeOut = FALSE;						//是否有删除线
+	logft.lfCharSet = CHINESEBIG5_CHARSET;					//字符集
+	logft.lfOutPrecision = OUT_DEFAULT_PRECIS;			//输出精度
+	logft.lfClipPrecision = CLIP_DEFAULT_PRECIS;			//剪切精度
+	logft.lfQuality = DEFAULT_QUALITY;				//输出质量
+	logft.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;	//字体的间距和家族
+	logft.lfOrientation = 0;
+	logft.lfEscapement = 0;
+	_tcscpy_s(logft.lfFaceName, 32, TEXT("system"));					//字体类型
+	font = CreateFontIndirect(&logft);
+	oldFont = (HFONT)SelectObject(m_bufHdc, font);
 
 	TCHAR strBuf[10] = { 0 };
 	SIZE size = { 0 };
@@ -234,12 +232,9 @@ BOOL CBarChart::DrawLine()
 		{
 			POINT tBegin = { m_ptZero.x, (LONG)(m_ptZero.y - i * m_heightMergin) };
 
-			if (fontSize >= 1)
-			{
-				_itot_s(i, strBuf, 10, 10);
-				::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
-				TextOut(m_bufHdc, tBegin.x - size.cx - 5, tBegin.y - size.cy / 2, strBuf, _tcslen(strBuf));
-			}
+			_itot_s(i, strBuf, 10, 10);
+			::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
+			TextOut(m_bufHdc, tBegin.x - size.cx - 5, tBegin.y - size.cy / 2, strBuf, _tcslen(strBuf));
 
 			MoveToEx(m_bufHdc, tBegin.x, tBegin.y, NULL);
 			LineTo(m_bufHdc, tBegin.x + m_hWidth, tBegin.y - m_hWidth);
@@ -247,11 +242,10 @@ BOOL CBarChart::DrawLine()
 			j++;
 		}
 	}
-	if (fontSize >= 1)
-	{
-		SelectObject(m_bufHdc, oldFont);
-		DeleteObject(font);
-	}
+
+	SelectObject(m_bufHdc, oldFont);
+	DeleteObject(font);
+
 	SelectObject(m_bufHdc, OldHPen);
 	DeleteObject(hPen);
 	return TRUE;
@@ -267,28 +261,26 @@ BOOL CBarChart::DrawItem()
 	HFONT font = NULL;
 	HFONT oldFont = NULL;
 	int fontSize = (m_itemWidth / 4) < m_nFontMinSize ? m_nFontMinSize : (m_itemWidth / 4) > m_nFontMaxSize ? m_nFontMaxSize : (m_itemWidth / 4);
-	if (fontSize >= 1)
-	{
-		LOGFONT logft;
-		ZeroMemory(&logft, sizeof(logft));
-		//CFont::FromHandle((HFONT)GetStockObject(DEFAULT_GUI_FONT))->GetLogFont(&logft);//获取系统字体
-		logft.lfWidth = 0;							//字体宽度
-		logft.lfHeight = fontSize;							//字体高度
-		logft.lfWeight = 5;						//字体粗细
-		logft.lfItalic = FALSE;						//是否斜体
-		logft.lfUnderline = FALSE;						//是否有下划线
-		logft.lfStrikeOut = FALSE;						//是否有删除线
-		logft.lfCharSet = CHINESEBIG5_CHARSET;					//字符集
-		logft.lfOutPrecision = OUT_DEFAULT_PRECIS;			//输出精度
-		logft.lfClipPrecision = CLIP_DEFAULT_PRECIS;			//剪切精度
-		logft.lfQuality = DEFAULT_QUALITY;				//输出质量
-		logft.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;	//字体的间距和家族
-		logft.lfOrientation = 0;
-		logft.lfEscapement = 0;
-		_tcscpy_s(logft.lfFaceName, 32, TEXT("system"));					//字体类型
-		font = CreateFontIndirect(&logft);
-		oldFont = (HFONT)SelectObject(m_bufHdc, font);
-	}
+
+	LOGFONT logft;
+	ZeroMemory(&logft, sizeof(logft));
+	//CFont::FromHandle((HFONT)GetStockObject(DEFAULT_GUI_FONT))->GetLogFont(&logft);//获取系统字体
+	logft.lfWidth = 0;							//字体宽度
+	logft.lfHeight = fontSize;							//字体高度
+	logft.lfWeight = 5;						//字体粗细
+	logft.lfItalic = FALSE;						//是否斜体
+	logft.lfUnderline = FALSE;						//是否有下划线
+	logft.lfStrikeOut = FALSE;						//是否有删除线
+	logft.lfCharSet = CHINESEBIG5_CHARSET;					//字符集
+	logft.lfOutPrecision = OUT_DEFAULT_PRECIS;			//输出精度
+	logft.lfClipPrecision = CLIP_DEFAULT_PRECIS;			//剪切精度
+	logft.lfQuality = DEFAULT_QUALITY;				//输出质量
+	logft.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;	//字体的间距和家族
+	logft.lfOrientation = 0;
+	logft.lfEscapement = 0;
+	_tcscpy_s(logft.lfFaceName, 32, TEXT("system"));					//字体类型
+	font = CreateFontIndirect(&logft);
+	oldFont = (HFONT)SelectObject(m_bufHdc, font);
 
 	COLORREF oldClr;
 	TCHAR strBuf[10] = { 0 };
@@ -337,29 +329,25 @@ BOOL CBarChart::DrawItem()
 			DeleteObject(hBrush);
 		}
 
-		if (fontSize >= 1)
-		{
-			oldClr = SetTextColor(m_bufHdc, (*tbegin).rgbColor);
+		oldClr = SetTextColor(m_bufHdc, (*tbegin).rgbColor);
 
-			::GetTextExtentPoint(m_bufHdc, (*tbegin).item.name.c_str(), (*tbegin).item.name.length(), &size);
-			TextOut(m_bufHdc, ptPos.x + (m_itemWidth - size.cx) / 2, ptPos.y + 5, (*tbegin).item.name.c_str(), (*tbegin).item.name.length());
+		::GetTextExtentPoint(m_bufHdc, (*tbegin).item.name.c_str(), (*tbegin).item.name.length(), &size);
 
-			_itot_s((*tbegin).item.value, strBuf, 10, 10);
-			::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
-			TextOut(m_bufHdc, ptPos.x + (m_itemWidth - size.cx) / 2, ptPos.y - height - m_hWidth - size.cy - 5, strBuf, _tcslen(strBuf));
-			
-			SetTextColor(m_bufHdc, oldClr);
-		}
+		for (int i = 0, line = 0, length = (*tbegin).item.name.length(); i < length; i += 2, line++)
+			TextOut(m_bufHdc, ptPos.x + (m_itemWidth - size.cx / length * 2) / 2, ptPos.y + 5 + line * size.cy, (*tbegin).item.name.c_str() + i, 2);
+
+		_itot_s((*tbegin).item.value, strBuf, 10, 10);
+		::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
+		TextOut(m_bufHdc, ptPos.x + (m_itemWidth - size.cx) / 2, ptPos.y - height - m_hWidth - size.cy - 5, strBuf, _tcslen(strBuf));
+
+		SetTextColor(m_bufHdc, oldClr);
 
 		ptPos.x += m_itemWidth;
 		tbegin++;
 	}
 
-	if (fontSize >= 1)
-	{
-		SelectObject(m_bufHdc, oldFont);
-		DeleteObject(font);
-	}
+	SelectObject(m_bufHdc, oldFont);
+	DeleteObject(font);
 
 	return TRUE;
 }
