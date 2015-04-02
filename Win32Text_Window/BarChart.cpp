@@ -13,8 +13,19 @@ CBarChart::~CBarChart()
 BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARCHARTITEM> items, int itemMergin)
 {
 	//hWidth为以立方体宽为斜边的等边直角三角形的直角边长
-	CTDFigure::Init(hdc, rtScope, nMargin);
+	BOOL bRet = FALSE;
+	bRet = CTDFigure::Init(hdc, rtScope, nMargin);
+	if (bRet == FALSE)
+	{
+		return FALSE;
+	}
+
 	m_hWidth = hWidth;
+	if (m_hWidth < 0)
+	{
+		return FALSE;
+	}
+
 	m_tdfItems = items;
 	m_itemMergin = itemMergin;
 	m_nItemCount = m_tdfItems.size();
@@ -41,10 +52,13 @@ BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARC
 		return FALSE;
 	}
 
-	m_heightMergin = m_nValidYLength / m_nMaxValue;
-	if (m_heightMergin <= 0)
+	if (m_nMaxValue != 0)
 	{
-		return FALSE;
+		m_heightMergin = (double)m_nValidYLength / (double)m_nMaxValue;
+	}
+	else
+	{
+		m_heightMergin = -1;
 	}
 
 	return TRUE;
@@ -55,13 +69,17 @@ BOOL CBarChart::DrawDc()
 	FillRect(m_bufHdc, &m_rtScope, (HBRUSH)GetStockObject(WHITE_BRUSH));
 	DrawLine();
 	DrawXY();
-	DrawXYName(TEXT("X"), TEXT("Y"));
 	DrawItem();
 	return BitBlt(m_hdc, m_rtScope.left, m_rtScope.top, m_nWidth, m_nHeight, m_bufHdc, 0, 0, SRCCOPY);
 }
 
 BOOL CBarChart::DrawCube(POINT ptPos, int length, int hWidth, int height, COLORREF  rgbColor)
 {
+	if (length <= 00 || hWidth <= 0 || height <= 0)
+	{
+		return FALSE;
+	}
+
 	//hWidth为以立方体宽为斜边的等边直角三角形的直角边长
 	POINT mainPos[6] = { 0 };
 	mainPos[0].x = ptPos.x;
@@ -130,9 +148,14 @@ BOOL CBarChart::DrawCube(POINT ptPos, int length, int hWidth, int height, COLORR
 
 BOOL CBarChart::DrawLine()
 {
+	if (m_heightMergin <= 0)
+	{
+		return FALSE;
+	}
+
 	HBRUSH hBrush;
 	HBRUSH oldHBrush;
-	hBrush = CreateSolidBrush(RGB(255,255,150));
+	hBrush = CreateSolidBrush(RGB(255, 255, 150));
 	oldHBrush = (HBRUSH)SelectObject(m_bufHdc, hBrush);
 
 	POINT mainPos[4] = { 0 };
@@ -164,17 +187,59 @@ BOOL CBarChart::DrawLine()
 	hPen = CreatePen(PS_DOT, 1, RGB(221, 221, 221));
 	OldHPen = (HPEN)SelectObject(m_bufHdc, hPen);
 
-	for (int i = 1, j = 1; i * m_heightMergin < m_nValidYLength; i++)
+	HFONT font = NULL;
+	HFONT oldFont = NULL;
+	int fontSize = (int)(m_nMaxValue / 10 * m_heightMergin / 2) > 20 ? 20 : (int)(m_nMaxValue / 10 * m_heightMergin / 2);
+	if (fontSize >= 1)
 	{
-		if (i  == m_nMaxValue / 10 * j)
+		LOGFONT logft;
+		ZeroMemory(&logft, sizeof(logft));
+		//CFont::FromHandle((HFONT)GetStockObject(DEFAULT_GUI_FONT))->GetLogFont(&logft);//获取系统字体
+		logft.lfWidth = 0;							//字体宽度
+		logft.lfHeight = fontSize;							//字体高度
+		logft.lfWeight = 5;						//字体粗细
+		logft.lfItalic = FALSE;						//是否斜体
+		logft.lfUnderline = FALSE;						//是否有下划线
+		logft.lfStrikeOut = FALSE;						//是否有删除线
+		logft.lfCharSet = CHINESEBIG5_CHARSET;					//字符集
+		logft.lfOutPrecision = OUT_DEFAULT_PRECIS;			//输出精度
+		logft.lfClipPrecision = CLIP_DEFAULT_PRECIS;			//剪切精度
+		logft.lfQuality = DEFAULT_QUALITY;				//输出质量
+		logft.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;	//字体的间距和家族
+		logft.lfOrientation = 0;
+		logft.lfEscapement = 0;
+		_tcscpy_s(logft.lfFaceName, 32, TEXT("system"));					//字体类型
+		font = CreateFontIndirect(&logft);
+		oldFont = (HFONT)SelectObject(m_bufHdc, font);
+	}
+
+	TCHAR strBuf[10] = { 0 };
+	SIZE size = { 0 };
+
+	for (int i = 0, j = 0, lineValue = m_nMaxValue / 10 * j; i <= m_nMaxValue; i++, lineValue = m_nMaxValue / 10 * j)
+	{
+		if (i == lineValue)
 		{
-			MoveToEx(m_bufHdc, m_ptZero.x, m_ptZero.y - i * m_heightMergin, NULL);
-			LineTo(m_bufHdc, m_ptZero.x + m_hWidth, m_ptZero.y - m_hWidth - i * m_heightMergin);
-			LineTo(m_bufHdc, m_ptZero.x + m_hWidth + m_nValidXLength, m_ptZero.y - m_hWidth - i * m_heightMergin);
+			POINT tBegin = { m_ptZero.x, (LONG)(m_ptZero.y - i * m_heightMergin) };
+
+			if (fontSize >= 1)
+			{
+				_itot_s(i, strBuf, 10, 10);
+				::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
+				TextOut(m_bufHdc, tBegin.x - size.cx - 5, tBegin.y - size.cy / 2, strBuf, _tcslen(strBuf));
+			}
+
+			MoveToEx(m_bufHdc, tBegin.x, tBegin.y, NULL);
+			LineTo(m_bufHdc, tBegin.x + m_hWidth, tBegin.y - m_hWidth);
+			LineTo(m_bufHdc, tBegin.x + m_hWidth + m_nValidXLength, tBegin.y - m_hWidth);
 			j++;
 		}
 	}
-
+	if (fontSize >= 1)
+	{
+		SelectObject(m_bufHdc, oldFont);
+		DeleteObject(font);
+	}
 	SelectObject(m_bufHdc, OldHPen);
 	DeleteObject(hPen);
 	return TRUE;
@@ -182,6 +247,38 @@ BOOL CBarChart::DrawLine()
 
 BOOL CBarChart::DrawItem()
 {
+	if (m_heightMergin <= 0)
+	{
+		return FALSE;
+	}
+
+	HFONT font = NULL;
+	HFONT oldFont = NULL;
+	int fontSize = (m_itemWidth / 4) > 20 ? 20 : (m_itemWidth / 4);
+	if (fontSize >= 1)
+	{
+		LOGFONT logft;
+		ZeroMemory(&logft, sizeof(logft));
+		//CFont::FromHandle((HFONT)GetStockObject(DEFAULT_GUI_FONT))->GetLogFont(&logft);//获取系统字体
+		logft.lfWidth = 0;							//字体宽度
+		logft.lfHeight = fontSize;							//字体高度
+		logft.lfWeight = 5;						//字体粗细
+		logft.lfItalic = FALSE;						//是否斜体
+		logft.lfUnderline = FALSE;						//是否有下划线
+		logft.lfStrikeOut = FALSE;						//是否有删除线
+		logft.lfCharSet = CHINESEBIG5_CHARSET;					//字符集
+		logft.lfOutPrecision = OUT_DEFAULT_PRECIS;			//输出精度
+		logft.lfClipPrecision = CLIP_DEFAULT_PRECIS;			//剪切精度
+		logft.lfQuality = DEFAULT_QUALITY;				//输出质量
+		logft.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;	//字体的间距和家族
+		logft.lfOrientation = 0;
+		logft.lfEscapement = 0;
+		_tcscpy_s(logft.lfFaceName, 32, TEXT("system"));					//字体类型
+		font = CreateFontIndirect(&logft);
+		oldFont = (HFONT)SelectObject(m_bufHdc, font);
+	}
+
+	COLORREF oldClr;
 	vector<BARCHARTITEM>::iterator tbegin = m_tdfItems.begin();
 	vector<BARCHARTITEM>::iterator tend = m_tdfItems.end();
 	POINT ptPos = m_ptZero;
@@ -189,11 +286,25 @@ BOOL CBarChart::DrawItem()
 	{
 		ptPos.x += m_itemMergin;
 
-		DrawCube(ptPos, m_itemWidth, m_hWidth, (*tbegin).item.value * (int)m_heightMergin, (*tbegin).rgbColor);
+		DrawCube(ptPos, m_itemWidth, m_hWidth, (int)((*tbegin).item.value * m_heightMergin), (*tbegin).rgbColor);
+
+		if (fontSize >= 1)
+		{
+			oldClr = SetTextColor(m_bufHdc, (*tbegin).rgbColor);
+			TSTRING strBuf = (*tbegin).item.name;
+			TextOut(m_bufHdc, ptPos.x, ptPos.y + 5, strBuf.c_str(), strBuf.length());
+			SetTextColor(m_bufHdc, oldClr);
+		}
 
 		ptPos.x += m_itemWidth;
 		ptPos.x += m_hWidth;
 		tbegin++;
+	}
+
+	if (fontSize >= 1)
+	{
+		SelectObject(m_bufHdc, oldFont);
+		DeleteObject(font);
 	}
 
 	return TRUE;

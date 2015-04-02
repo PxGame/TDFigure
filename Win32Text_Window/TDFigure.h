@@ -49,9 +49,7 @@ protected:
 
 protected:
 	BOOL Init(HDC hdc, RECT rtScope, int nMargin);
-	BOOL ChangeSize(RECT rtScope, int nMargin = -1);
-	BOOL DrawXY(RECT rtScope = {-1, -1, -1, -1}, int nMargin = -1);
-	BOOL DrawXYName(TSTRING strXName, TSTRING strYName);
+	BOOL DrawXY();
 
 public:
 	virtual BOOL DrawDc();

@@ -149,7 +149,7 @@ LRESULT OnPaint(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 
 	CBarChart bc;
 	vector<BARCHARTITEM> item;
-	BARCHARTITEM hh = { 20, TEXT("hehe") , RGB(0,255,0)};
+	BARCHARTITEM hh = { 20, TEXT("ÏòÄÁ") , RGB(0,255,0)};
 	item.push_back(hh);
 	hh.item.value = 30;
 	hh.rgbColor = RGB(255,0,0);
@@ -157,18 +157,18 @@ LRESULT OnPaint(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 	hh.item.value = 40;
 	hh.rgbColor = RGB(0, 0, 255);
 	item.push_back(hh);
-	hh.item.value = 50;
-	hh.rgbColor = RGB(100, 100, 100);
-	item.push_back(hh);
-	hh.item.value = 60;
-	hh.rgbColor = RGB(200, 200, 200);
-	item.push_back(hh);
-	hh.item.value = 70;
-	hh.rgbColor = RGB(255, 255, 255);
-	item.push_back(hh);
+	//hh.item.value = 50;
+	//hh.rgbColor = RGB(100, 100, 100);
+	//item.push_back(hh);
+	//hh.item.value = 1000;
+	//hh.rgbColor = RGB(200, 200, 200);
+	//item.push_back(hh);
+	//hh.item.value = 200;
+	//hh.rgbColor = RGB(255, 255, 255);
+	//item.push_back(hh);
 
 	BOOL bRet = FALSE;
-	bRet = bc.Init(hdc, rt, 20, 2, item, 2);
+	bRet = bc.Init(hdc, rt, 50, 10, item, 10);
 	if (bRet == TRUE)
 	{
 		bc.DrawDc();

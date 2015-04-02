@@ -20,7 +20,7 @@ private:
 	int m_hWidth;
 	int m_itemWidth;
 	int m_itemMergin;
-	int m_heightMergin;
+	double m_heightMergin;
 	int m_nItemCount;
 	int m_nMaxValue;
 	int m_nMinValue;
