@@ -192,9 +192,10 @@ LRESULT OnPaint(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 	item.push_back(hh);
 
 	BOOL bRet = FALSE;
-	bRet = bc.Init(hdc, rt, 50, 10, item, 10);
+	bRet = bc.Init(hdc, rt, 50, 10, item, 20);
 	if (bRet == TRUE)
 	{
+		bc.ShowBrokenLine(TRUE);
 		bc.SetXYName(TEXT("X(0/0)"), TEXT("Y(1/1)"));
 		bc.DrawDc();
 	}

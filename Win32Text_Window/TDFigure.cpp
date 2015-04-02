@@ -8,7 +8,10 @@ CTDFigure::CTDFigure()
 	m_penAxis = NULL;
 
 
-	m_rtScope = { 0, 0, 0, 0 };
+	m_rtScope.bottom = 0;
+	m_rtScope.left = 0;
+	m_rtScope.right = 0;
+	m_rtScope.top = 0;
 	m_nMargin = 0;
 	m_strXName = TEXT("X");
 	m_strYName = TEXT("Y");
@@ -18,7 +21,8 @@ CTDFigure::CTDFigure()
 
 	m_nWidth = 0;
 	m_nHeight = 0;
-	m_ptZero = { 0, 0 };
+	m_ptZero.x = 0;
+	m_ptZero.y = 0;
 	m_nXLength = 0;
 	m_nYLength = 0;
 

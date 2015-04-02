@@ -3,6 +3,18 @@
 
 CBarChart::CBarChart()
 {
+	m_tdfItems.clear();
+	m_hWidth = 0;
+	m_itemWidth = 0;
+	m_itemMergin = 0;
+	m_heightMergin = 0;
+	m_nItemCount = 0;
+	m_nMaxValue = 0;
+	m_nMinValue = 0;	
+	m_nFontMaxSize = 20;
+	m_nFontMinSize = 12;
+
+	m_bShowBrokenLine =  FALSE;
 }
 
 
@@ -46,7 +58,7 @@ BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARC
 			m_nMinValue = m_tdfItems[i].item.value;
 		}
 	}
-	m_itemWidth = m_nValidXLength / m_nItemCount - m_itemMergin - m_hWidth;
+	m_itemWidth = m_nValidXLength / m_nItemCount - m_itemMergin;
 	if (m_itemWidth <= 0)
 	{
 		return FALSE;
@@ -75,7 +87,7 @@ BOOL CBarChart::DrawDc()
 
 BOOL CBarChart::DrawCube(POINT ptPos, int length, int hWidth, int height, COLORREF  rgbColor)
 {
-	if (length <= 00 || hWidth <= 0 || height <= 0)
+	if (length <= 0 || hWidth <= 0 || height <= 0)
 	{
 		return FALSE;
 	}
@@ -189,7 +201,7 @@ BOOL CBarChart::DrawLine()
 
 	HFONT font = NULL;
 	HFONT oldFont = NULL;
-	int fontSize = (int)(m_nMaxValue / 10 * m_heightMergin / 2) > 20 ? 20 : (int)(m_nMaxValue / 10 * m_heightMergin / 2);
+	int fontSize = (int)(m_nMaxValue / 10 * m_heightMergin / 2) < m_nFontMinSize ? m_nFontMinSize : (int)(m_nMaxValue / 10 * m_heightMergin / 2) > m_nFontMaxSize ? m_nFontMaxSize : (int)(m_nMaxValue / 10 * m_heightMergin / 2);
 	if (fontSize >= 1)
 	{
 		LOGFONT logft;
@@ -254,7 +266,7 @@ BOOL CBarChart::DrawItem()
 
 	HFONT font = NULL;
 	HFONT oldFont = NULL;
-	int fontSize = (m_itemWidth / 4) > 20 ? 20 : (m_itemWidth / 4);
+	int fontSize = (m_itemWidth / 4) < m_nFontMinSize ? m_nFontMinSize : (m_itemWidth / 4) > m_nFontMaxSize ? m_nFontMaxSize : (m_itemWidth / 4);
 	if (fontSize >= 1)
 	{
 		LOGFONT logft;
@@ -282,24 +294,48 @@ BOOL CBarChart::DrawItem()
 	TCHAR strBuf[10] = { 0 };
 	SIZE size = { 0 };
 	int height = 0;
+	BOOL bRet = FALSE;
 	vector<BARCHARTITEM>::iterator tbegin = m_tdfItems.begin();
 	vector<BARCHARTITEM>::iterator tend = m_tdfItems.end();
 	POINT ptPos = m_ptZero;
 	POINT linePos = { ptPos.x + m_itemWidth / 2, ptPos.y - height };
-	POINT oldLinePos = m_ptZero;
+	POINT oldLinePos = {m_ptZero.x + m_hWidth / 2, m_ptZero.y - m_hWidth / 2};
 	while (tbegin != tend)
 	{
 		ptPos.x += m_itemMergin;
 		height = (int)((*tbegin).item.value * m_heightMergin);
-		
-		DrawCube(ptPos, m_itemWidth, m_hWidth, height, (*tbegin).rgbColor);
 
-		linePos.x = ptPos.x + m_itemWidth / 2;
-		linePos.y = ptPos.y - height;
-		MoveToEx(m_bufHdc, oldLinePos.x, oldLinePos.y, NULL);
-		LineTo(m_bufHdc, linePos.x, linePos.y);
-		Ellipse(m_bufHdc, linePos.x - 2, linePos.y - 2, linePos.x + 2, linePos.y + 2);
-		oldLinePos = linePos;
+		if (m_bShowBrokenLine == TRUE)
+		{
+			Ellipse(m_bufHdc, linePos.x - 2, linePos.y - 2, linePos.x + 2, linePos.y + 2);
+			linePos.x = ptPos.x + m_itemWidth / 2 + m_hWidth / 2;
+			linePos.y = ptPos.y - height - m_hWidth / 2;
+			MoveToEx(m_bufHdc, oldLinePos.x, oldLinePos.y, NULL);
+			LineTo(m_bufHdc, linePos.x, linePos.y);
+			oldLinePos = linePos;
+		}
+
+		bRet = DrawCube(ptPos, m_itemWidth, m_hWidth, height, (*tbegin).rgbColor);
+		if (bRet == FALSE)
+		{
+			POINT mainPos[4] = { 
+				ptPos, 
+				{ ptPos.x + m_hWidth, ptPos.y - m_hWidth}, 
+				{ ptPos.x + m_hWidth + m_itemWidth, ptPos.y - m_hWidth },
+				{ ptPos.x + m_itemWidth, ptPos.y }
+			};
+
+			HBRUSH hBrush;
+			HBRUSH oldHBrush;
+			hBrush = CreateSolidBrush((*tbegin).rgbColor);
+			oldHBrush = (HBRUSH)SelectObject(m_bufHdc, hBrush);
+
+			POINT topRhombus[4] = { mainPos[0], mainPos[1], mainPos[2], mainPos[3] };
+			Polygon(m_bufHdc, topRhombus, 4);
+
+			SelectObject(m_bufHdc, oldHBrush);
+			DeleteObject(hBrush);
+		}
 
 		if (fontSize >= 1)
 		{
@@ -316,7 +352,6 @@ BOOL CBarChart::DrawItem()
 		}
 
 		ptPos.x += m_itemWidth;
-		ptPos.x += m_hWidth;
 		tbegin++;
 	}
 
@@ -333,4 +368,9 @@ void CBarChart::SetXYName(TSTRING strXName, TSTRING strYName)
 {
 	m_strXName = strXName;
 	m_strYName = strYName;
+}
+
+void CBarChart::ShowBrokenLine(BOOL bMode)
+{
+	m_bShowBrokenLine = bMode;
 }
