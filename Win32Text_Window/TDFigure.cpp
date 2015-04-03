@@ -104,7 +104,8 @@ BOOL CTDFigure::Init(HDC hdc, RECT rtScope, int nMargin)
 
 BOOL CTDFigure::DrawDc()
 {
-	FillRect(m_bufHdc, &m_rtScope, (HBRUSH)GetStockObject(WHITE_BRUSH));
+	RECT rtBkg = { 0, 0, m_nWidth, m_nHeight };
+	FillRect(m_bufHdc, &rtBkg, (HBRUSH)GetStockObject(WHITE_BRUSH));
 	DrawXY();
 	return BitBlt(m_hdc, m_rtScope.left, m_rtScope.top, m_nWidth, m_nHeight, m_bufHdc, 0, 0, SRCCOPY);
 	//BLENDFUNCTION bldt;

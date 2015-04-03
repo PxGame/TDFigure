@@ -78,7 +78,8 @@ BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARC
 
 BOOL CBarChart::DrawDc()
 {
-	FillRect(m_bufHdc, &m_rtScope, (HBRUSH)GetStockObject(WHITE_BRUSH));
+	RECT rtBkg = { 0, 0, m_nWidth, m_nHeight };
+	FillRect(m_bufHdc, &rtBkg, (HBRUSH)GetStockObject(WHITE_BRUSH));
 	DrawLine();
 	DrawXY();
 	DrawItem();
