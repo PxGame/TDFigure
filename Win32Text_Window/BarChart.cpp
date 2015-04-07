@@ -13,7 +13,7 @@ CBarChart::CBarChart()
 	m_nMinValue = 0;	
 	m_nFontMaxSize = 20;
 	m_nFontMinSize = 12;
-
+	m_nYValueMultiple = 0;
 	m_bShowBrokenLine =  FALSE;
 }
 
@@ -22,7 +22,7 @@ CBarChart::~CBarChart()
 {
 }
 
-BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARCHARTITEM> items, int itemMergin)
+BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, vector<BARCHARTITEM> items, int itemMergin, int hWidth)
 {
 	//hWidth为以立方体宽为斜边的等边直角三角形的直角边长
 	BOOL bRet = FALSE;
@@ -32,14 +32,8 @@ BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARC
 		return FALSE;
 	}
 
-	m_hWidth = hWidth;
-	if (m_hWidth < 0)
-	{
-		return FALSE;
-	}
-
 	m_tdfItems = items;
-	m_itemMergin = itemMergin;
+
 	m_nItemCount = m_tdfItems.size();
 	if (m_nItemCount <= 0)
 	{
@@ -58,14 +52,63 @@ BOOL CBarChart::Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARC
 			m_nMinValue = m_tdfItems[i].item.value;
 		}
 	}
-	m_itemWidth = m_nValidXLength / m_nItemCount - m_itemMergin;
-	if (m_itemWidth <= 0)
+
+	if (itemMergin != -1)
 	{
-		return FALSE;
+		m_itemMergin = itemMergin;	
+		m_itemWidth = m_nValidXLength / m_nItemCount - m_itemMergin;
+
+		if (m_itemWidth <= 0)
+		{
+			return FALSE;
+		}
+	}
+	else
+	{
+		m_itemMergin = m_nValidXLength / m_nItemCount / 3;
+		m_itemWidth = 2 * m_itemMergin;
+	}
+
+	if (hWidth != -1)
+	{
+		m_hWidth = hWidth;
+	}
+	else
+	{
+		m_hWidth = m_itemMergin / 2;
 	}
 
 	if (m_nMaxValue != 0)
 	{
+		int maxValue = m_nMaxValue;
+		if (m_nMaxValue <= 10)
+		{
+			maxValue = 10;
+			m_nYValueMultiple = 1;
+		}
+		else
+		{
+			m_nYValueMultiple = 1;
+			while (maxValue / 10 != 0)
+			{
+				m_nYValueMultiple *= 10;
+				maxValue /= 10;
+			}
+
+			if (m_nMaxValue >= 100)
+			{
+				m_nYValueMultiple /= 10;
+			}
+
+			maxValue = m_nMaxValue;
+			int n = maxValue % m_nYValueMultiple;
+			if (n != 0)
+			{
+				maxValue += (m_nYValueMultiple - n);
+			}
+		}
+		
+		m_nMaxValue = maxValue;
 		m_heightMergin = (double)m_nValidYLength / (double)m_nMaxValue;
 	}
 	else
@@ -231,7 +274,7 @@ BOOL CBarChart::DrawLine()
 	{
 		if (i == lineValue)
 		{
-			POINT tBegin = { m_ptZero.x, (LONG)(m_ptZero.y - i * m_heightMergin) };
+			POINT tBegin = { m_ptZero.x, (LONG)(m_ptZero.y - lineValue * m_heightMergin) };
 
 			_itot_s(i, strBuf, 10, 10);
 			::GetTextExtentPoint(m_bufHdc, strBuf, _tcslen(strBuf), &size);
@@ -293,6 +336,7 @@ BOOL CBarChart::DrawItem()
 	POINT ptPos = m_ptZero;
 	POINT linePos = { ptPos.x + m_itemWidth / 2, ptPos.y - height };
 	POINT oldLinePos = {m_ptZero.x + m_hWidth / 2, m_ptZero.y - m_hWidth / 2};
+
 	while (tbegin != tend)
 	{
 		ptPos.x += m_itemMergin;

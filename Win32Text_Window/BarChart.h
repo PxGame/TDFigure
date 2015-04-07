@@ -26,6 +26,7 @@ private:
 	int m_nMinValue;
 	int m_nFontMaxSize;
 	int m_nFontMinSize;
+	int m_nYValueMultiple;
 
 	BOOL m_bShowBrokenLine;
 
@@ -36,7 +37,7 @@ private:
 
 public:
 	//hdc-需要绘制的hdc, rtScope-范围大小，nMargin-边界到坐标轴的距离，items-统计数据集合，itemMergin-统计图中每一项之间的间距
-	BOOL Init(HDC hdc, RECT rtScope, int nMargin, int hWidth, vector<BARCHARTITEM> items, int itemMergin);
+	BOOL Init(HDC hdc, RECT rtScope, int nMargin, vector<BARCHARTITEM> items, int itemMergin = -1, int hWidth = -1);
 	void SetXYName(TSTRING strXName, TSTRING strYName);
 	void ShowBrokenLine(BOOL bMode);
 	BOOL DrawDc();
