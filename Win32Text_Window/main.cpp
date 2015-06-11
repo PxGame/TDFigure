@@ -131,7 +131,7 @@ LRESULT OnCommand(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 }
 
 # include "BarChart.h"
-
+# include "PieDiagram.h"
 
 LRESULT OnPaint(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 {
@@ -143,49 +143,50 @@ LRESULT OnPaint(_In_ HWND hwnd, _In_ WPARAM wParam, _In_ LPARAM lParam)
 	//DrawCube(hdc, pt, 200, 50, 100, RGB(100, 0, 0));
 	RECT rt;
 	GetClientRect(hwnd, &rt);
-	//CTDFigure fg;
-	//fg.Init(hdc, rt, 100);
-	//fg.DrawDc();
 
-	CBarChart bc;
-	vector<BARCHARTITEM> item;
-	BARCHARTITEM hh = { 1, TEXT("向牧向牧向牧牧") , RGB(0,255,0)};
-	item.push_back(hh);
-	hh.item.value = 1;
-	hh.rgbColor = RGB(255, 0, 0);
-	item.push_back(hh);
-	hh.item.value = 2;
-	hh.rgbColor = RGB(0, 0, 255);
-	item.push_back(hh);
-	hh.item.value = 9;
-	hh.rgbColor = RGB(100, 100, 100);
-	item.push_back(hh);
-	hh.item.value = 10;
-	hh.rgbColor = RGB(200, 200, 200);
-	item.push_back(hh);
-	hh.item.value = 97;
-	hh.rgbColor = RGB(100, 73, 10);
-	item.push_back(hh);
-	hh.item.value = 22;
-	hh.rgbColor = RGB(54, 200, 54);
-	item.push_back(hh);
-	hh.item.value = 50;
-	hh.rgbColor = RGB(5, 100, 64);
-	item.push_back(hh);
-	hh.item.value = 80;
-	hh.rgbColor = RGB(57, 200, 200);
-	item.push_back(hh);	item.push_back(hh);
-	hh.rgbColor = RGB(255, 12, 255);
-	item.push_back(hh);
+	//CBarChart bc;
+	//vector<BARCHARTITEM> item;
+	//BARCHARTITEM hh = { 1, TEXT("向牧向牧向牧牧") , RGB(0,255,0)};
+	//item.push_back(hh);
+	//hh.item.value = 1;
+	//hh.rgbColor = RGB(255, 0, 0);
+	//item.push_back(hh);
+	//hh.item.value = 2;
+	//hh.rgbColor = RGB(0, 0, 255);
+	//item.push_back(hh);
+	//hh.item.value = 9;
+	//hh.rgbColor = RGB(100, 100, 100);
+	//item.push_back(hh);
+	//hh.item.value = 10;
+	//hh.rgbColor = RGB(200, 200, 200);
+	//item.push_back(hh);
+	//hh.item.value = 97;
+	//hh.rgbColor = RGB(100, 73, 10);
+	//item.push_back(hh);
+	//hh.item.value = 22;
+	//hh.rgbColor = RGB(54, 200, 54);
+	//item.push_back(hh);
+	//hh.item.value = 50;
+	//hh.rgbColor = RGB(5, 100, 64);
+	//item.push_back(hh);
+	//hh.item.value = 80;
+	//hh.rgbColor = RGB(57, 200, 200);
+	//item.push_back(hh);	item.push_back(hh);
+	//hh.rgbColor = RGB(255, 12, 255);
+	//item.push_back(hh);
+	//BOOL bRet = FALSE;
+	//bRet = bc.Init(hdc, rt, 100, item);
+	//if (bRet == TRUE)
+	//{
+	//	bc.ShowBrokenLine(TRUE);
+	//	bc.SetXYName(TEXT("X(0/0)"), TEXT("Y(1/1)"));
+	//	bc.DrawDc();
+	//}
+	CPieDiagram pie;
+	vector<PIEDIAGRAMITEM> items;
+	pie.Init(hdc, rt, 20, items);
+	pie.DrawDc();
 
-	BOOL bRet = FALSE;
-	bRet = bc.Init(hdc, rt, 100, item);
-	if (bRet == TRUE)
-	{
-		bc.ShowBrokenLine(TRUE);
-		bc.SetXYName(TEXT("X(0/0)"), TEXT("Y(1/1)"));
-		bc.DrawDc();
-	}
 
 	EndPaint(hwnd, &ps);
 

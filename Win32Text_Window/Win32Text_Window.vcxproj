@@ -80,11 +80,13 @@
   <ItemGroup>
     <ClCompile Include="BarChart.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PieDiagram.cpp" />
     <ClCompile Include="TDFigure.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BarChart.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="PieDiagram.h" />
     <ClInclude Include="TDFigure.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
